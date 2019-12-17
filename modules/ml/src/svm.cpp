@@ -205,11 +205,14 @@ public:
         for( j = 0; j < vcount; j++ )
         {
             Qfloat t = results[j];
-            Qfloat e = std::exp(std::abs(t));
-            if( t > 0 )
-                results[j] = (Qfloat)((e - 1.)/(e + 1.));
-            else
-                results[j] = (Qfloat)((1. - e)/(1. + e));
+            Qfloat e = std::exp(std::abs(t));          // Inf value is possible here
+            Qfloat r = (Qfloat)((e - 1.) / (e + 1.));  // NaN value is possible here (Inf/Inf or similar)
+            if (cvIsNaN(r))
+                r = std::numeric_limits<Qfloat>::infinity();
+            if (t < 0)
+                r = -r;
+            CV_DbgAssert(!cvIsNaN(r));
+            results[j] = r;
         }
     }
 
@@ -327,7 +330,7 @@ public:
         const Qfloat max_val = (Qfloat)(FLT_MAX*1e-3);
         for( int j = 0; j < vcount; j++ )
         {
-            if( results[j] > max_val )
+            if (!(results[j] <= max_val))  // handle NaNs too
                 results[j] = max_val;
         }
     }
@@ -1448,7 +1451,7 @@ public:
             sortSamplesByClasses( _samples, _responses, sidx_all, class_ranges );
 
             //check that while cross-validation there were the samples from all the classes
-            if( class_ranges[class_count] <= 0 )
+            if ((int)class_ranges.size() < class_count + 1)
                 CV_Error( CV_StsBadArg, "While cross-validation one or more of the classes have "
                 "been fell out of the sample. Try to reduce <Params::k_fold>" );
 
@@ -1610,6 +1613,7 @@ public:
 
     bool train( const Ptr<TrainData>& data, int ) CV_OVERRIDE
     {
+        CV_Assert(!data.empty());
         clear();
 
         checkParams();
@@ -1736,6 +1740,7 @@ public:
                     ParamGrid nu_grid, ParamGrid coef_grid, ParamGrid degree_grid,
                     bool balanced ) CV_OVERRIDE
     {
+        CV_Assert(!data.empty());
         checkParams();
 
         int svmType = params.svmType;
@@ -1949,6 +1954,7 @@ public:
                             const DecisionFunc& df = svm->decision_func[dfi];
                             sum = -df.rho;
                             int sv_count = svm->getSVCount(dfi);
+                            CV_DbgAssert(sv_count > 0);
                             const double* alpha = &svm->df_alpha[df.ofs];
                             const int* sv_index = &svm->df_index[df.ofs];
                             for( k = 0; k < sv_count; k++ )

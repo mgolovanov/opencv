@@ -1991,6 +1991,22 @@ TEST(Core_Vectors, issue_13078_workaround)
     ASSERT_EQ(7, ints[3]);
 }
 
+TEST(Core_MatExpr, issue_13926)
+{
+    Mat M1 = (Mat_<double>(4,4,CV_64FC1) << 1, 2, 3, 4,
+                                           5, 6, 7, 8,
+                                           9, 10, 11, 12,
+                                           13, 14, 15, 16);
+
+    Matx44d M2(1, 2, 3, 4,
+               5, 6, 7, 8,
+               9, 10, 11, 12,
+               13, 14, 15, 16);
+
+    EXPECT_GE(1e-6, cvtest::norm(M1*M2, M1*M1, NORM_INF)) << Mat(M1*M2) << std::endl << Mat(M1*M1);
+    EXPECT_GE(1e-6, cvtest::norm(M2*M1, M2*M2, NORM_INF)) << Mat(M2*M1) << std::endl << Mat(M2*M2);
+}
+
 
 #ifdef HAVE_EIGEN
 TEST(Core_Eigen, eigen2cv_check_Mat_type)
@@ -2008,5 +2024,18 @@ TEST(Core_Eigen, eigen2cv_check_Mat_type)
     //EXPECT_EQ(CV_64FC1, d_mat.type());
 }
 #endif // HAVE_EIGEN
+
+TEST(Mat, regression_12943)  // memory usage: ~4.5 Gb
+{
+    applyTestTag(CV_TEST_TAG_MEMORY_6GB);
+
+    const int width = 0x8000;
+    const int height = 0x10001;
+
+    cv::Mat src(height, width, CV_8UC1, Scalar::all(128));
+
+    cv::Mat dst;
+    cv::flip(src, dst, 0);
+}
 
 }} // namespace

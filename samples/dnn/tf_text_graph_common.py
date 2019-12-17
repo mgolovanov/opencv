@@ -21,7 +21,7 @@ def tokenize(s):
                 elif token:
                     tokens.append(token)
                     token = ""
-            isString = (symbol == '\"' or symbol == '\'') ^ isString;
+            isString = (symbol == '\"' or symbol == '\'') ^ isString
 
         elif symbol == '{' or symbol == '}' or symbol == '[' or symbol == ']':
             if token:
@@ -324,6 +324,6 @@ def writeTextGraph(modelPath, outputPath, outNodes):
             for node in graph_def.node:
                 if node.op == 'Const':
                     if 'value' in node.attr and node.attr['value'].tensor.tensor_content:
-                        node.attr['value'].tensor.tensor_content = ''
+                        node.attr['value'].tensor.tensor_content = b''
 
         tf.train.write_graph(graph_def, "", outputPath, as_text=True)
