@@ -1957,7 +1957,7 @@ CvSeqReader;
 *             Data structures for persistence (a.k.a serialization) functionality        *
 \****************************************************************************************/
 
-#if 0
+#if 1
 
 /** "black box" file storage */
 typedef struct CvFileStorage CvFileStorage;

@@ -1970,7 +1970,7 @@ CVAPI(void) cvSetIPLAllocators( Cv_iplCreateImageHeader create_header,
 *                                    Data Persistence                                    *
 \****************************************************************************************/
 
-#if 0
+#if 1
 /********************************** High-level functions ********************************/
 
 /** @brief Opens file storage for reading or writing data.
