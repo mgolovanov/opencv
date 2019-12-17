@@ -251,7 +251,7 @@ CvCapture_OpenNI2::CvCapture_OpenNI2(int index, const char * filename) :
 
     const char* deviceURI = openni::ANY_DEVICE;
     bool needColor = true;
-    bool needIR = true;
+    bool needIR = false;
     if (index >= 0)
     {
         int deviceType = DEVICE_DEFAULT;
@@ -297,7 +297,7 @@ CvCapture_OpenNI2::CvCapture_OpenNI2(int index, const char * filename) :
     setProperty(CV_CAP_PROP_OPENNI_REGISTRATION, 1.0);
 
     // default for Kinect2 camera
-    setProperty(CV_CAP_PROP_OPENNI2_MIRROR, 0.0);
+    setProperty(CV_CAP_PROP_OPENNI2_MIRROR, 1); // 0.0);
 
     isContextOpened = true;
 }
@@ -353,10 +353,12 @@ void CvCapture_OpenNI2::toggleStream(int stream, bool toggle)
                     status = streams[stream].setVideoMode(defaultStreamOutputMode(stream));
                     if (status != openni::STATUS_OK)
                     {
+#if 0
                         streams[stream].destroy();
                         CV_Error(CV_StsError, std::string("OpenCVKinect2 : Couldn't set ") +
                                  stream_names[stream] + std::string(" stream output mode: ") +
                                  std::string(openni::OpenNI::getExtendedError()));
+#endif
                     }
                 }
             }
@@ -365,10 +367,12 @@ void CvCapture_OpenNI2::toggleStream(int stream, bool toggle)
             status = streams[stream].start();
             if (status != openni::STATUS_OK)
             {
-                streams[stream].destroy();
+                streams[stream].stop(); // destroy();
+#if 0
                 CV_Error(CV_StsError, std::string("CvCapture_OpenNI2::CvCapture_OpenNI2 : Couldn't start ") +
                          stream_names[stream] + std::string(" stream: ") +
                          std::string(openni::OpenNI::getExtendedError()));
+#endif
             }
         }
         else
