@@ -2,3 +2,6 @@
 path = opencv_contrib
 url = https://github.com/opencv/opencv_contrib
 
+[submodule "opencv_extra"]
+path = opencv_extra
+url = https://github.com/opencv/opencv_extra
