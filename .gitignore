@@ -1,7 +1,7 @@
 # ignore dot files/directories
 .*
 !.gitignore
-
+!.gitmodules
 *.autosave
 *.pyc
 *.user
